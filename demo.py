@@ -1,8 +1,6 @@
 import hashlib
-import sys
 from pathlib import Path
 from time import sleep
-from datetime import datetime, time
 from logging import INFO
 
 from vnpy_ctastrategy import CtaEngine, CtaStrategyApp
@@ -65,44 +63,43 @@ if __name__ == "__main__":
     main_engine.add_gateway(BinanceGateway)  # 加载币安现货的网关
     main_engine.add_gateway(BinancesGateway)  # 加载币安合约的网关
 
+    # 加载币安现货的网关
+    # main_engine.add_gateway(BinanceGateway, gateway_key=md5_gateway_api)
+    # main_engine.connect(binance_settings, gateway_name=md5_gateway_api)
+
     # 连接到交易所
-    main_engine.connect(binance_settings, gateway_name=md5_gateway_api)
-    main_engine.connect(binances_settings, gateway_name=md5_gateway_apis)
+    main_engine.connect(binance_settings, 'BINANCE')
+    main_engine.connect(binances_settings, 'BINANCES')
     main_engine.write_log("连接BINANCE接口")
 
     sleep(10)  # 稍作等待策略启动完成。
     # main_engine.write_log("CTA策略初始化完成")
 
-    # cta_engine.add_strategy(
-    #     class_name='TestGridStrategy2',  # 执行策略种类
-    #     strategy_name='181',  # 名称
-    #     vt_symbol='btcusdt.BINANCE',
-    #     setting={'head_fix_long': '0.012', 'head_fix_short': '0.012', 'profit_long': '105', 'profit_short': '102', 'supply_step_long': '204', 'supply_step_short': '210', 'supply_fix_long': '0.015', 'supply_fix_short': '0.015', 'supply_count_long': '19', 'supply_count_short': '19', 'profit_limit_long': '5', 'profit_limit_short': '5', 'loss_long': '1000', 'loss_short': '1000', 'class_name': 'TestGridStrategy'},
-    #     strategy_no='181',
-    #     gateway_key=md5_gateway_api
-    # )
-
-    cta_engine.add_strategy(
-        class_name='SpotProfitGridStrategy',  # 执行策略种类
-        strategy_name='181',  # 名称
-        vt_symbol='btcusdt.BINANCE',
-        setting={'grid_step': '2', 'profit_step': '2', 'head_fix': '0.001', 'max_pos': '7', 'profit_orders_counts': '4', 'trailing_stop_multiplier': '3'},
-    )
-    cta_engine.add_strategy(
-        class_name='FutureGridStrategy',  # 执行策略种类
-        strategy_name='230',  # 名称
-        vt_symbol='BTCUSDT.BINANCE',
-        setting={'grid_step': '2', 'profit_step': '2', 'head_fix': '0.001', 'max_pos': '7', 'profit_orders_counts': '4',
-                 'trailing_stop_multiplier': '3'},
-    )
+    strategies = [
+        {'stra_no': '181', 'class_name': 'SpotProfitGridStrategy', 'symbol': 'btcusdt', 'exchange': 'BINANCE', 'setting': {'grid_step': '2', 'profit_step': '2', 'head_fix': '0.001', 'max_pos': '7', 'profit_orders_counts': '4', 'trailing_stop_multiplier': '3'}},
+        {'stra_no': '188', 'class_name': 'FutureGridStrategy', 'symbol': 'BTCUSDT', 'exchange': 'BINANCE', 'setting': {'grid_step': '5', 'profit_step': '2', 'head_fix': '0.001', 'max_pos': '7', 'profit_orders_counts': '4', 'trailing_stop_multiplier': '3'}}
+    ]
+    for strategy_name in strategies:
+        cta_engine.add_strategy(
+            class_name=strategy_name['class_name'],  # 执行策略种类
+            strategy_name=strategy_name['stra_no'],  # 名称
+            vt_symbol=f"{strategy_name['symbol']}.{strategy_name['exchange']}",
+            setting=strategy_name['setting'],
+        )
 
     setting = {'grid_step': '342', 'profit_step': '2', 'head_fix': '0.001', 'max_pos': '7', 'profit_orders_counts': '4',
                'trailing_stop_multiplier': '3'}
 
-    cta_engine.strategies.get('230').update_setting(setting=setting)
+    # strategy = cta_engine.strategies.get('230')
+    # strategy.update_setting(setting)
+
+    cta_engine.edit_strategy(strategy_name='230', setting=setting)
 
     # cta_engine.init_strategy(strategy_name='181')
-    cta_engine.init_all_strategies()  # 初始化所有的策略, 具体启动的哪些策略是来自于配置文件的
+    # cta_engine.init_all_strategies()  # 初始化所有的策略, 具体启动的哪些策略是来自于配置文件的
+
+    for strategy_name in strategies:
+        cta_engine.init_strategy(strategy_name['stra_no'])
 
     sleep(60)  # 预留足够的时间让策略去初始化.
 
@@ -116,9 +113,18 @@ if __name__ == "__main__":
     # cta_engine.start_strategy(strategy_name='181')
     # strategy = cta_engine.strategies.get('181', None)
     # strategy.load(data=data)
-    cta_engine.start_all_strategies()  # 开启所有的策略.
+    # cta_engine.start_all_strategies()  # 开启所有的策略.
+
+    for strategy_name in strategies:
+        cta_engine.start_strategy(strategy_name['stra_no'])
 
     main_engine.write_log("CTA策略全部启动")
+
+    for strategy_name in strategies:
+        cta_engine.stop_strategy(strategy_name['stra_no'])
+        cta_engine.remove_strategy(strategy_name['stra_no'])
+
+    main_engine.write_log("CTA策略全部停止")
 
     while True:
         sleep(10)

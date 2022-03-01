@@ -1,24 +1,23 @@
-from vnpy.app.cta_strategy.base import EVENT_CTA_LOG
 from vnpy.app.paper_account import PaperAccountApp
 from vnpy.event import EventEngine
 
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.ui import MainWindow, create_qapp
 
-from vnpy.app.cta_strategy.engine import CtaEngine
-from vnpy.app.cta_backtester.engine import BacktesterEngine
-from vnpy.app.cta_strategy.backtesting import BacktestingEngine
+from vnpy_ctastrategy import CtaEngine, CtaStrategyApp
+from vnpy_ctastrategy.backtesting import BacktestingEngine
+from vnpy_ctabacktester import BacktesterEngine
 
 from vnpy.gateway.binance import BinanceGateway  # 现货
 from vnpy.gateway.binances import BinancesGateway  # 合约
 from vnpy.gateway.bitmex import BitmexGateway  # 合约
 
-from vnpy.app.cta_strategy import CtaStrategyApp  # CTA策略
-from vnpy.app.data_manager import DataManagerApp  # 数据管理, csv_data
+from vnpy_ctastrategy import CtaStrategyApp  # CTA策略
+from vnpy_ctabacktester import CtaBacktesterApp  # 回测研究
+from vnpy_datamanager import DataManagerApp  # 数据管理, csv_data
+from vnpy_riskmanager import RiskManagerApp  # 风控管理
 from vnpy.app.data_recorder import DataRecorderApp  # 录行情数据
 from vnpy.app.algo_trading import AlgoTradingApp  # 算法交易
-from vnpy.app.cta_backtester import CtaBacktesterApp  # 回测研究
-from vnpy.app.risk_manager import RiskManagerApp  # 风控管理
 from vnpy.app.spread_trading import SpreadTradingApp  # 价差交易
 
 from pathlib import Path
@@ -41,10 +40,8 @@ def main():
     # main_engine.add_gateway(BinanceGateway, gateway_key='f4a52d262c05cae89bc388119e0ca9df')
     # main_engine.add_gateway(BinancesGateway, gateway_key='f4a52d262c05cae89bc388119e0ca9df')
 
-    main_engine.add_gateway(BinanceGateway, gateway_key='f4a52d262c05cae89bc388119e0ca9df')
+    main_engine.add_gateway(BinanceGateway)
     cta_engine: CtaEngine = main_engine.add_app(CtaStrategyApp)
-    # back_engine: BacktesterEngine = main_engine.add_app(CtaBacktesterApp)
-    # backer_engine: BacktesterEngine = main_engine.add_app(CtaBacktesterApp)
     main_engine.add_app(CtaBacktesterApp)
     main_engine.add_app(DataManagerApp)
     main_engine.add_app(AlgoTradingApp)
@@ -53,7 +50,7 @@ def main():
     main_engine.add_app(SpreadTradingApp)
     main_engine.add_app(PaperAccountApp)
 
-    cta_engine.set_log(log_name='cta', log_file=LOG_DIR + r'/cta_log/cta_{}.log'.format('1'))
+    # cta_engine.set_log(log_name='cta', log_file=LOG_DIR + r'/cta_log/cta_{}.log'.format('1'))
     # backer_engine.set_log(log_name='cta', log_file=LOG_DIR + r'/cta_log/cta_{}.log'.format('1'))
     # engine = BacktesterEngine()
     # engine.set_log(log_name='cta', log_file=LOG_DIR + r'/cta_log/cta_{}.log'.format('1'))

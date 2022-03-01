@@ -1,0 +1,38 @@
+{
+    "230": {
+        "class_name": "FutureGridStrategy",
+        "vt_symbol": "BTCUSDT.BINANCE",
+        "setting": {
+            "grid_step": "2",
+            "profit_step": "2",
+            "head_fix": "0.001",
+            "max_pos": "7",
+            "profit_orders_counts": "4",
+            "trailing_stop_multiplier": "3"
+        }
+    },
+    "181": {
+        "class_name": "SpotProfitGridStrategy",
+        "vt_symbol": "btcusdt.BINANCE",
+        "setting": {
+            "grid_step": "2",
+            "profit_step": "2",
+            "head_fix": "0.001",
+            "max_pos": "7",
+            "profit_orders_counts": "4",
+            "trailing_stop_multiplier": "3"
+        }
+    },
+    "188": {
+        "class_name": "FutureGridStrategy",
+        "vt_symbol": "BTCUSDT.BINANCE",
+        "setting": {
+            "grid_step": "5",
+            "profit_step": "2",
+            "head_fix": "0.001",
+            "max_pos": "7",
+            "profit_orders_counts": "4",
+            "trailing_stop_multiplier": "3"
+        }
+    }
+}
